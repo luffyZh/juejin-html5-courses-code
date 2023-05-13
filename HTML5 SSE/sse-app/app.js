@@ -22,7 +22,7 @@ app.get('/sse', (req, res) => {
   res.flushHeaders();
 
   setInterval(() => {
-    const message = `Current time is ${new Date().toLocaleTimeString()}`
+    const message = `服务器自动推送当前时间：${new Date().toLocaleTimeString()}`
     res.write(`data: ${message}\n\n`);
   }, 1000);
 });
