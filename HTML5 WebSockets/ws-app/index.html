@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>多人聊天室</title>
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    /* 隐藏滚动条 */
+    ::-webkit-scrollbar {
+      display: none; /* Chrome Safari */
+    }
+    /* 整个聊天窗口的样式 */
+    .chat-window {
+      width: 600px;
+      min-height: 500px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      padding: 10px;
+    }
+
+    /* 聊天记录的样式 */
+    .chat-history {
+      height: 440px;
+      padding: 10px;
+      overflow-y: scroll;
+      background-color: #eaeaea;
+      border-radius: 2px;
+    }
+
+    /* 每一条消息的样式 */
+    .message {
+      position: relative;
+      margin-bottom: 10px;
+    }
+
+    .message.self {
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .message.self .content {
+      background-color: #4CAF50;
+      color: #fff;
+    }
+
+    /* 显示消息的用户名的样式 */
+    .message .username {
+      font-weight: bold;
+      color: #333;
+    }
+
+    /* 显示消息发送时间的样式 */
+    .message .timestamp {
+      font-size: 12px;
+      color: #999;
+      margin-left: 10px;
+    }
+
+    /* 显示消息内容的样式 */
+    .message .content {
+      margin-top: 5px;
+      padding: 10px;
+      border-radius: 4px;
+      background-color: #fff;
+      display: inline-block;
+      max-width: 200px;
+      word-wrap: break-word;
+      box-shadow: 0 1px 2px rgba(0,0,0,.2);
+    }
+
+    /* 输入框和发送按钮的样式 */
+    .chat-input {
+      display: flex;
+      margin-top: 10px;
+    }
+
+    /* 输入框的样式 */
+    .chat-input input[type=text] {
+      flex: 1;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      margin-right: 10px;
+    }
+
+    /* 发送按钮的样式 */
+    .chat-input button {
+      padding: 10px;
+      border: none;
+      border-radius: 4px;
+      background-color: #4CAF50;
+      color: #fff;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="chat-window">
+    <div class="chat-history" id="chat-history"></div>
+    <div class="chat-input">
+      <input type="text" id="input" placeholder="请输入消息" />
+      <button id="send-btn">发送</button>
+    </div>
+  </div>
+
+  <script>
+    const socket = new WebSocket("ws://localhost:3000");
+
+    // 获取聊天记录的容器元素
+    const chatHistory = document.getElementById("chat-history");
+
+    // 监听服务器发送的消息
+    socket.addEventListener("message", (event) => {
+      const messageDom = document.createElement("div");
+      messageDom.classList.add("message");
+      const li = document.createElement("li");
+      li.classList.add("content");
+      li.textContent = event.data;
+      messageDom.appendChild(li);
+      chatHistory.appendChild(messageDom);
+      // 自动滚动到底部
+      chatHistory.scrollTop = chatHistory.scrollHeight;
+    });
+
+    // 监听表单提交事件
+    document.querySelector("#send-btn").addEventListener("click", (e) => {
+      e.preventDefault();
+      const input = document.getElementById("input");
+      const msg = input.value;
+      // 发送自己的消息到聊天室
+      addMessageInChat(msg);
+      input.value = "";
+
+      // 发送消息给服务器
+      socket.send(msg);
+    });
+
+    function addMessageInChat(msg) {
+      const messageDom = document.createElement("div");
+      messageDom.classList.add("message");
+      messageDom.classList.add("self");
+      const li = document.createElement("li");
+      li.classList.add("content");
+      li.textContent = msg;
+      messageDom.appendChild(li);
+      chatHistory.appendChild(messageDom);
+        // 自动滚动到底部
+        chatHistory.scrollTop = chatHistory.scrollHeight;
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dedicated Workers</title>
+</head>
+<body>
+  <p>Result is：<span id="result"></span></p>
+  <button onclick="startWorker()">开始</button>
+  <button onclick="stopWorker()">结束</button>
+</body>
+<script>
+let worker;
+
+function startWorker() {
+  if (typeof(Worker) !== "undefined") {
+    if (typeof(worker) === "undefined") {
+      worker = new Worker("worker.js");
+    }
+    worker.onmessage = function(event) {
+      document.getElementById("result").innerHTML = event.data;
+    };
+  } else {
+    document.getElementById("result").innerHTML = "抱歉，你的浏览器不支持 Web Workers。";
+  }
+}
+
+function stopWorker() {
+  worker.terminate();
+  worker = undefined;
+}
+</script>
+</html>

@@ -1,0 +1,36 @@
+<!-- page1.html -->
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Shared Workers - Page 2</title>
+</head>
+<body>
+  <h1>Shared Workers - Page 2</h1>
+  <input id="input" placeholder="请输入页面2的消息" />
+  <button id="button">发送消息</button>&nbsp;
+  <section id="result">
+    Result: 
+  </section>
+  <script>
+
+    const input = document.getElementById('input');
+
+    let worker = new SharedWorker('worker.js');
+    let port = worker.port;
+
+    port.onmessage = function(event) {
+      const result = document.getElementById('result');
+      const message = document.createElement('p');
+      message.textContent = `Received message in Page 2: ${event.data}`;
+      result.appendChild(message);
+    }
+
+    port.start();
+
+    document.getElementById('button').addEventListener('click', function() {
+      if (!input.value) return;
+      port.postMessage(input.value);
+    }, false);
+  </script>
+</body>
+</html>
